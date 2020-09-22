@@ -1,0 +1,41 @@
+<html>
+<head>
+</head>
+<body>
+<input type="file"></input>
+<button>ファイルを開く</button>
+<script src="pkg/zip_wasm.js"></script>
+<script>
+function view_setup() {
+	const input  = document.querySelector('input')
+	const button = document.querySelector('button')
+	button.addEventListener('click', (e) => {
+		input.click()
+	})
+	input.addEventListener('change', (e) => {
+		let file = e.target.files[0]
+		file.arrayBuffer().then((buffer) => {
+			let results = load_bytes(new Uint8Array(buffer))
+			console.log(results)
+		})
+
+		load_file(file);
+	})
+}
+const { add, filter_even, concat_str, load_bytes, load_file } = wasm_bindgen;
+async function run() {
+	await wasm_bindgen('./pkg/zip_wasm_bg.wasm')
+	view_setup();
+	const result = add(1,2)
+	console.log(`1 + 2 = ${result}`)
+
+	const result2 = filter_even([1,2,3,4,5])
+	console.table(result2)
+
+	const result3 = concat_str("hello", "world", " ")
+	console.log(result3)
+}
+run()
+</script>
+</body>
+</html>
